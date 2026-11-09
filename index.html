@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AAD Store</title>
+
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#101010;color:white;font-family:Arial}
+header{background:#000;padding:22px;text-align:center;border-bottom:2px solid #c9a227}
+header h1{font-size:38px;margin:0;color:#d5b34c}
+header p{color:#aaa}
+nav{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;padding:15px}
+button{background:#d5b34c;color:#000;border:0;padding:12px 18px;border-radius:8px;font-weight:bold;cursor:pointer}
+button:hover{opacity:.8}
+.container{padding:15px;max-width:1100px;margin:auto}
+input,select{padding:12px;border-radius:7px;border:1px solid #555;background:#222;color:white;margin:5px;width:100%}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:15px}
+.card{background:#202020;border:1px solid #333;border-radius:12px;padding:12px;text-align:center}
+.card img{width:100%;height:145px;object-fit:contain;background:#292929;border-radius:8px}
+.price{color:#d5b34c;font-weight:bold;font-size:18px}
+h2{color:#d5b34c}
+#admin{display:none;background:#202020;padding:15px;border-radius:12px;margin-top:20px}
+footer{text-align:center;padding:25px;color:#aaa;background:#000;margin-top:30px}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>AAD</h1>
+<p>ACCESSORIES & TECHNOLOGY</p>
+<p>كل ما تحتاجه من إكسسوارات الإلكترونيات</p>
+</header>
+
+<nav>
+<button onclick="filter('الكل')">كل المنتجات</button>
+<button onclick="filter('أغطية الهواتف')">أغطية الهواتف</button>
+<button onclick="filter('الشواحن والكابلات')">الشواحن</button>
+<button onclick="filter('السماعات')">السماعات</button>
+<button onclick="filter('الساعات الذكية')">الساعات</button>
+<button onclick="filter('إكسسوارات أخرى')">أخرى</button>
+</nav>
+
+<div class="container">
+
+<input id="search" placeholder="ابحث عن منتج..." oninput="showProducts()">
+
+<h2>منتجات AAD</h2>
+<div class="grid" id="products"></div>
+
+<div id="admin">
+<h2>إضافة منتج جديد</h2>
+<input id="name" placeholder="اسم المنتج">
+<input id="price" type="number" placeholder="السعر بالدينار">
+<select id="category">
+<option>أغطية الهواتف</option>
+<option>الشواحن والكابلات</option>
+<option>السماعات</option>
+<option>الساعات الذكية</option>
+<option>إكسسوارات أخرى</option>
+</select>
+<input id="photo" placeholder="رابط صورة المنتج (اختياري)">
+<button onclick="addProduct()">إضافة المنتج</button>
+</div>
+
+</div>
+
+<footer>
+<h2>AAD STORE</h2>
+<p>للطلب والاستفسار عبر واتساب</p>
+<a href="https://wa.me/213555097769" style="color:#d5b34c;font-size:20px">
+0555097769
+</a>
+<p>© 2026 AAD - All Rights Reserved</p>
+</footer>
+
+<script>
+let items = JSON.parse(localStorage.getItem("aad_products") || "[]");
+let current = "الكل";
+
+function showProducts(){
+let search=document.getElementById("search").value.toLowerCase();
+let box=document.getElementById("products");
+box.innerHTML="";
+
+items.filter(p=>(current==="الكل"||p.category===current)&&p.name.toLowerCase().includes(search))
+.forEach(p=>{
+box.innerHTML+=`
+<div class="card">
+<img src="${p.photo || 'https://placehold.co/300x200/292929/d5b34c?text=AAD'}">
+<h3>${p.name}</h3>
+<p class="price">${p.price} دج</p>
+<button onclick="order('${p.name}')">اطلب عبر واتساب</button>
+</div>`;
+});
+}
+
+function filter(category){
+current=category;
+showProducts();
+}
+
+function addProduct(){
+let name=document.getElementById("name").value.trim();
+let price=document.getElementById("price").value;
+let category=document.getElementById("category").value;
+let photo=document.getElementById("photo").value.trim();
+
+if(!name||!price){alert("أدخل اسم المنتج والسعر");return;}
+
+items.push({name,price,category,photo});
+localStorage.setItem("aad_products",JSON.stringify(items));
+showProducts();
+alert("تمت إضافة المنتج");
+}
+
+function order(name){
+let message=encodeURIComponent("السلام عليكم، أريد طلب: "+name);
+window.open("https://wa.me/213555097769?text="+message,"_blank");
+}
+
+showProducts();
+</script>
+
+</body>
+</html>
